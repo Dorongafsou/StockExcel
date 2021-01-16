@@ -42,7 +42,7 @@ class ExcelFeeder(object):
         self.sheet_work_stock.activate()
 
     def preprocess_excel(self):
-        self.sheet_work_stock.range("B1").value = "Stock Treader Excel"
+        self.sheet_work_stock.range("B1").value = "Stock Treader excel_package"
         self.sheet_work_stock.range("I1").api.Font.Bold = True
         self.sheet_work_stock.range("A2:j2").color = (96, 211, 249)  # blue header
         self.sheet_work_stock.range("A2:A2").color = (255, 165, 0)  # orange header

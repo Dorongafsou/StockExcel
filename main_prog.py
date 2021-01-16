@@ -2,7 +2,7 @@ import pythoncom
 
 from base.excel_feeder import ExcelFeeder
 
-EXCEL_NAME = "tomer2.xlsx"
+EXCEL_NAME = "dorong.xlsx"
 
 
 def main():
