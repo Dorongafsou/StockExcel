@@ -1,2 +1,2 @@
-# HugoCapital
+# StockExcel
 Live Stock Tracking System
