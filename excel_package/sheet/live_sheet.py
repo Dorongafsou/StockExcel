@@ -6,8 +6,7 @@ import xlwings as xw
 from threading import Thread
 
 from excel_package.stock_data.live_stock import LiveStock
-
-INDEX_TO_START_STOCK_VAL = 3
+from excel_package.utills.utill_setting import INDEX_TO_START_STOCK_VAL
 
 
 class LiveSheet(Sheet):
@@ -63,7 +62,7 @@ class LiveSheet(Sheet):
 
         while True:
             for index in range(30):
-                name_tk = self._xlwing_sheet.range(f"A{index + INDEX_TO_START_STOCK_VAL}").value
+                name_tk = xw.Book(self.file_name).sheets[self.name].range(f"A{index + INDEX_TO_START_STOCK_VAL}").value
                 if not name_tk:
                     continue
                 if threads[index] is not None and threads[index].is_alive():

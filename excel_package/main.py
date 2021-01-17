@@ -5,7 +5,7 @@ EXCEL_NAME = "dorong.xlsx"
 
 
 def main():
-    excel  = Excel(EXCEL_NAME)
+    excel = Excel(EXCEL_NAME)
     excel.run()
 
 

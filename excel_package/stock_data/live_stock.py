@@ -20,7 +20,7 @@ class LiveStock(object):
         return data.DataReader(self.stock_ticker,
                                start=start_d,
                                end=end_d,
-                               data_source='yahoo')['Adj Close']
+                               data_source='yahoo')
 
     @staticmethod
     def convert_stock_dict(dict_stock: dict) -> dict:
@@ -28,4 +28,6 @@ class LiveStock(object):
 
 
 if __name__ == '__main__':
-    pprint(LiveStock("NVDA").price)
+    df = LiveStock("NVDA").get_data_history()
+    df["total money"] = df["Close"] * df["Volume"]
+    print(df)

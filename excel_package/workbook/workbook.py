@@ -1,14 +1,19 @@
 import os
 import xlwings as xw
 from xlwings import Book
+from threading import Thread
 
 from excel_package.sheet.live_sheet import LiveSheet
 from excel_package.sheet.stock_close_price_g import StockCloseGraph
-LIVE_STOCK = "Live Stock"
-GRAPH_STOCK = "Graph Stock"
+from excel_package.sheet.stock_return_per_day import StockReturnPerDay
+from excel_package.sheet.stock_total_money import StockTotalGraph
+from excel_package.utills.utill_setting import LIVE_STOCK, GRAPH_STOCK, GRAPH_TOTAL, GRAPH_RETURN_PER_DAY
+
 SHEET_NAMES_DEFAULT = {
     LIVE_STOCK: LiveSheet,
     GRAPH_STOCK: StockCloseGraph,
+    GRAPH_TOTAL: StockTotalGraph,
+    GRAPH_RETURN_PER_DAY: StockReturnPerDay,
 }
 
 
@@ -23,8 +28,8 @@ class WorkBook(object):
         [sheet.pre_run() for sheet in self.sheet_list]
 
     def real_time(self):
-
-        [sheet.run_sheet() for sheet in self.sheet_list]
+        threads = [Thread(target=sheet.run_sheet) for sheet in self.sheet_list]
+        [t.start() for t in threads]
 
     def add_sheet(self, name, index):
         pass
