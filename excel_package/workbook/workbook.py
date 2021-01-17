@@ -17,6 +17,19 @@ SHEET_NAMES_DEFAULT = {
 }
 
 
+
+DEFAULT_START_D = '2019-11-01'
+DEFAULT_END_D = '2019-12-31'
+START_DATE_CELL = "Q2"
+END_DATE_CELL = "Q3"
+# sheets names
+LIVE_STOCK = "Live Stock"
+GRAPH_STOCK = "Graph Stock"
+GRAPH_TOTAL = "Graph total money"
+GRAPH_RETURN_PER_DAY = "Graph retrun per day "
+INDEX_TO_START_STOCK_VAL = 3
+
+
 class WorkBook(object):
     def __init__(self, name):
         self._name = name
@@ -28,14 +41,17 @@ class WorkBook(object):
         [sheet.pre_run() for sheet in self.sheet_list]
 
     def real_time(self):
-        threads = [Thread(target=sheet.run_sheet) for sheet in self.sheet_list]
+        threads = [Thread(target=self.sheet_list[0].run_sheet)]
+        threads += [Thread(target=self.run_graph, args=[self.sheet_list[1:]])]
         [t.start() for t in threads]
 
-    def add_sheet(self, name, index):
-        pass
+
+    @staticmethod
+    def run_graph(graph_sheets):
+        while True:
+            [graph_s.run_sheet() for graph_s in graph_sheets]
 
     def create_sheets(self):
-
         sheet_object = [sheet_t[1](sheet_t[0], index, self._name) for index, sheet_t in enumerate(SHEET_NAMES_DEFAULT.items())]
         sheet_object.reverse()
         if len(sheet_object):

@@ -77,17 +77,20 @@ class GraphSheet(Sheet, ABC):
             for chart in xw.Book(self.file_name).sheets[self.name].charts:
                 if chart.api[1].ChartTitle.Text in stock_name:
                     return
+
             sht = xw.Book(self.file_name).sheets[self.name]
             row_num = 1000
             col_num = index * 2
             sht.range((row_num, col_num)).value = self.get_df(stock_name)
-            chart = sht.charts.add()
+
+            chart = sht.charts.add(left=50)
             chart.set_source_data(sht.range((row_num, col_num)).expand())
             chart.chart_type = self.graph_type
             chart.api[1].SetElement(2)  # Place chart title at the top
             chart.api[1].ChartTitle.Text = stock_name  # Change text of the chart title
             chart.width = 1000
             chart.top = 211.0 * (index - 1)
+
         except Exception as e:
             print(f"fail add_chart_graph_sheet {e}")
             return

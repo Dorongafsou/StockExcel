@@ -11,10 +11,8 @@ class StockReturnPerDay(GraphSheet):
 
     def run_sheet(self):
         self.graph_type = "bar_clustered"
-        while True:
-            print("StockReturnPerDay")
-            self.global_graph()
-            time.sleep(5)
+        print("StockReturnPerDay")
+        self.global_graph()
 
     def get_df(self, stock_name):
         stock_t = LiveStock(stock_name)

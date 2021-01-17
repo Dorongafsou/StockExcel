@@ -8,6 +8,8 @@ from threading import Thread
 from excel_package.stock_data.live_stock import LiveStock
 from excel_package.utills.utill_setting import INDEX_TO_START_STOCK_VAL
 
+HYPER_LINK = "=HYPERLINK(\"#'{0}'!A1\", \"{0}\")"
+
 
 class LiveSheet(Sheet):
 
@@ -35,6 +37,11 @@ class LiveSheet(Sheet):
         self._xlwing_sheet.range("Q2:Q3").color = (230, 230, 230)  # gray body
         self._xlwing_sheet.range("P2:Q3").api.Borders.Weight = 3
         self._xlwing_sheet.range("P2:Q3").api.Font.Bold = True
+        #     Add hyper link
+        self._xlwing_sheet.range("L1").value = "Graph Links"
+        links_val = [HYPER_LINK.format(sheet.name) for sheet in xw.Book(self.file_name).sheets]
+        for i, link in zip(range(len(links_val)), links_val):
+            self._xlwing_sheet.range(f"L{i + 3}").value = link
 
     @staticmethod
     def thread_run(arg_dict: dict):

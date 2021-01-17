@@ -10,10 +10,8 @@ class StockCloseGraph(GraphSheet):
         pass
 
     def run_sheet(self):
-        while True:
-            print("run_sheet graph stock")
-            self.global_graph()
-            time.sleep(5)
+        print("run_sheet graph stock")
+        self.global_graph()
 
     def get_df(self, stock_name):
         stock_t = LiveStock(stock_name)

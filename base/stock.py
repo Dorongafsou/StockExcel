@@ -1,16 +1,12 @@
 from datetime import datetime
-from pprint import pprint
-
 from pandas_datareader import data
 
-import logging
-import threading
 import time
 
 
 class Stock(object):
     def __init__(self, stock_ticker):
-        self.stock_ticker = stock_ticker
+        self.stock_ticker = stock_ticker.upper()
         self.__dict__.update(self.update_stock(stock_ticker))
         self.time_stock = time.time()
         self.date_time = datetime.fromtimestamp(self.time_stock)
@@ -42,22 +38,3 @@ def timing(f):
     return wrap
 
 
-def thread_function(name):
-    global sun_th
-    stock = Stock(name)
-    print(stock.__dict__)
-    print(time.thread_time())
-
-#
-# @timing
-# def main():
-#     for stocks_name in stocks_name_list:
-#         x = threading.Thread(target=thread_function, args=(stocks_name,))
-#         x.start()
-#
-#
-# if __name__ == '__main__':
-#     format = "%(asctime)s: %(message)s"
-#     logging.basicConfig(format=format, level=logging.INFO,
-#                         datefmt="%H:%M:%S")
-#     main()

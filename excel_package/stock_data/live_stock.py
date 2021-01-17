@@ -1,9 +1,7 @@
-from datetime import datetime
 from pprint import pprint
 
 from pandas_datareader import data
 
-import time
 
 
 class LiveStock(object):

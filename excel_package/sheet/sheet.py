@@ -8,7 +8,10 @@ class Sheet(ABC):
         self.name = name
         self.index = index
         self._xlwing_sheet = None
-        self.file_name= file_name
+        self.file_name = file_name
+
+    def __str__(self):
+        return self.name
 
     def __lt__(self, other):
         return self.index < other.index
