@@ -5,15 +5,18 @@ from threading import Thread
 
 from excel_package.sheet.live_sheet import LiveSheet
 from excel_package.sheet.stock_close_price_g import StockCloseGraph
+from excel_package.sheet.stock_cumulative_daly_return import StockCumulativeDalyReturn
 from excel_package.sheet.stock_return_per_day import StockReturnPerDay
 from excel_package.sheet.stock_total_money import StockTotalGraph
-from excel_package.utills.utill_setting import LIVE_STOCK, GRAPH_STOCK, GRAPH_TOTAL, GRAPH_RETURN_PER_DAY
+from excel_package.utills.utill_setting import LIVE_STOCK, GRAPH_STOCK, GRAPH_TOTAL, GRAPH_RETURN_PER_DAY, \
+    CUMULATIVE_DALY_RETURN
 
 SHEET_NAMES_DEFAULT = {
     LIVE_STOCK: LiveSheet,
     GRAPH_STOCK: StockCloseGraph,
     GRAPH_TOTAL: StockTotalGraph,
     GRAPH_RETURN_PER_DAY: StockReturnPerDay,
+    CUMULATIVE_DALY_RETURN: StockCumulativeDalyReturn,
 }
 
 

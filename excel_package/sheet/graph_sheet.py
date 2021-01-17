@@ -7,7 +7,7 @@ import xlwings as xw
 
 from excel_package.stock_data.live_stock import LiveStock
 from excel_package.utills.utill_setting import LIVE_STOCK, DEFAULT_START_D, START_DATE_CELL, END_DATE_CELL, \
-    DEFAULT_END_D
+    DEFAULT_END_D, BACK_PLACE, HYPER_LINK_BACK
 
 
 class GraphSheet(Sheet, ABC):
@@ -18,6 +18,7 @@ class GraphSheet(Sheet, ABC):
         self.graph_type = 'line_markers'
 
     def pre_run(self):
+        self._xlwing_sheet.range(BACK_PLACE).value = HYPER_LINK_BACK.format(LIVE_STOCK, "Back")
         pass
 
     def run_sheet(self):

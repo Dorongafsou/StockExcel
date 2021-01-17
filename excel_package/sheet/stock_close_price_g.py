@@ -7,6 +7,7 @@ from excel_package.stock_data.live_stock import LiveStock
 class StockCloseGraph(GraphSheet):
 
     def pre_run(self):
+        super(StockCloseGraph, self).pre_run()
         pass
 
     def run_sheet(self):

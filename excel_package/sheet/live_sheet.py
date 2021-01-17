@@ -6,9 +6,7 @@ import xlwings as xw
 from threading import Thread
 
 from excel_package.stock_data.live_stock import LiveStock
-from excel_package.utills.utill_setting import INDEX_TO_START_STOCK_VAL
-
-HYPER_LINK = "=HYPERLINK(\"#'{0}'!A1\", \"{0}\")"
+from excel_package.utills.utill_setting import INDEX_TO_START_STOCK_VAL, HYPER_LINK
 
 
 class LiveSheet(Sheet):
@@ -41,7 +39,7 @@ class LiveSheet(Sheet):
         self._xlwing_sheet.range("L1").value = "Graph Links"
         links_val = [HYPER_LINK.format(sheet.name) for sheet in xw.Book(self.file_name).sheets]
         for i, link in zip(range(len(links_val)), links_val):
-            self._xlwing_sheet.range(f"L{i + 3}").value = link
+            self._xlwing_sheet.range(f"L{i + 2}").value = link
 
     @staticmethod
     def thread_run(arg_dict: dict):
