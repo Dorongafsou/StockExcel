@@ -1,5 +1,4 @@
 from excel_package.sheet.graph_sheet import GraphSheet
-import time
 
 from excel_package.stock_data.live_stock import LiveStock
 
