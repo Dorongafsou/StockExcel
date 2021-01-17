@@ -62,16 +62,20 @@ class LiveSheet(Sheet):
 
         while True:
             for index in range(30):
-                name_tk = xw.Book(self.file_name).sheets[self.name].range(f"A{index + INDEX_TO_START_STOCK_VAL}").value
-                if not name_tk:
+                try:
+                    name_tk = xw.Book(self.file_name).sheets[self.name].range(f"A{index + INDEX_TO_START_STOCK_VAL}").value
+                    if not name_tk:
+                        continue
+                    if threads[index] is not None and threads[index].is_alive():
+                        continue
+                    arg_dict = {
+                        "ticker": name_tk,
+                        "index": index + INDEX_TO_START_STOCK_VAL,
+                        "name": self.name,
+                        "file_name": self.file_name
+                    }
+                    threads[index] = Thread(target=self.thread_run, args=(arg_dict,))
+                    threads[index].start()
+                except Exception as e:
+                    print(f" fail run_sheet live sheet {e}")
                     continue
-                if threads[index] is not None and threads[index].is_alive():
-                    continue
-                arg_dict = {
-                    "ticker": name_tk,
-                    "index": index + INDEX_TO_START_STOCK_VAL,
-                    "name": self.name,
-                    "file_name": self.file_name
-                }
-                threads[index] = Thread(target=self.thread_run, args=(arg_dict,))
-                threads[index].start()
