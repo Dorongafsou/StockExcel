@@ -45,8 +45,10 @@ class WorkBook(object):
 
     def real_time(self):
         threads = [Thread(target=self.sheet_list[0].run_sheet)]
-        threads += [Thread(target=self.run_graph, args=[self.sheet_list[1:]])]
+        import time
         [t.start() for t in threads]
+        time.sleep(50)
+        threads += [Thread(target=self.run_graph, args=[self.sheet_list[1:]])]
 
 
     @staticmethod

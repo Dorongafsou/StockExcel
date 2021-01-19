@@ -16,8 +16,8 @@ class LiveStock(object):
         stock_info = self.convert_stock_dict(data.get_quote_yahoo([stock_ticker]).to_dict())
         return stock_info
 
-    def get_data_history(self, start_d='2019-1-1', end_d='2019-12-31'):
-        return data.DataReader(self.stock_ticker,
+    def get_data_history(self, start_d='2019-1-1', end_d='2019-12-31',):
+        return data.DataReader([self.stock_ticker],
                                start=start_d,
                                end=end_d,
                                data_source='yahoo')
