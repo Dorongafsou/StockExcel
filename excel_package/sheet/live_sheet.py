@@ -1,7 +1,9 @@
 import time
+from xlwings.utils import rgb_to_int
 
 from excel_package.sheet.sheet import Sheet
 
+from excel_package.Email.mail import send_mail
 import xlwings as xw
 from threading import Thread
 
@@ -23,7 +25,7 @@ class LiveSheet(Sheet):
 
         # self._xlwing_sheet.range("A3:E32").options(transpose=True).value = list(stocks_translate_dict.values())
         self._xlwing_sheet.range("A2").value = ['stock', "value", "bid", 'ask', "min", "max", "open",
-                                                "higher to send", "lower to send"]
+                                                "Buy/Sell", "count", "condition"]
         xw.Range('H2:I2').autofit()
 
         # graph chose
@@ -53,10 +55,17 @@ class LiveSheet(Sheet):
         tmp_char = "B"
         try:
             for i, type_val in enumerate(stock_vals):
+                xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"B{index}").api.Font.Color = [rgb_to_int((107, 142, 35)), rgb_to_int((139, 0, 0))][getattr(stock, "color") == "red"]
+
                 xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"{chr(ord(tmp_char) + i)}{index}").value = [
                     getattr(stock, type_val)
                 ]
-            xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f'H{index}').value = [int(time.time() - 1610825060.4012973)]
+                if xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"J{index}").value is True:
+                    mail_content = [str(obj) for obj in xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"H{index}:I{index}").options(numbers=int).value]
+                    send_mail(getattr(stock, 'displayName'), ' '.join(mail_content))
+                    xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"H{index}:J{index}").clear_contents()
+
+
         except Exception as ex:
             return None
 
@@ -68,6 +77,7 @@ class LiveSheet(Sheet):
         while True:
             for index in range(30):
                 try:
+                    # Need to take one time all the stock names
                     name_tk = xw.Book(self.file_name).sheets[self.name].range(f"A{index + INDEX_TO_START_STOCK_VAL}").value
                     if not name_tk:
                         continue

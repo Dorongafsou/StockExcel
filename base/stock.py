@@ -7,6 +7,7 @@ import time
 class Stock(object):
     def __init__(self, stock_ticker):
         self.stock_ticker = stock_ticker.upper()
+        # need to take it out from the builder
         self.__dict__.update(self.update_stock(stock_ticker))
         self.time_stock = time.time()
         self.date_time = datetime.fromtimestamp(self.time_stock)
