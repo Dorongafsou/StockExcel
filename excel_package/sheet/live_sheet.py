@@ -42,7 +42,10 @@ class LiveSheet(Sheet):
         for i, link in zip(range(len(links_val)), links_val):
             self._xlwing_sheet.range(f"{LINK_COL}{i + 2}").value = link
 
-        # interval and date
+        # Mail
+        self._xlwing_sheet.range(f"{MAIL_COL[0]}1").value = "Mail for updates"
+        self._xlwing_sheet.range(f"{MAIL_COL}2").api.Borders.Weight = 3
+        self._xlwing_sheet.range(f"{MAIL_COL}2").api.Font.Bold = True
 
     @staticmethod
     def thread_run(arg_dict: dict):
@@ -67,8 +70,14 @@ class LiveSheet(Sheet):
                                     xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"K{index}:L{index}").options(
                                         numbers=int).value]
 
-                    send_mail(getattr(stock, 'displayName'), ' '.join(mail_content))
-                    xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"K{index}:M{index}").clear_contents()
+                    dst_address = xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"{MAIL_COL}2").value
+                    if dst_address is not None:
+                        send_mail(getattr(stock, 'displayName'), ' '.join(mail_content), dst_address)
+                        xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"K{index}:M{index}").clear_contents()
+                        xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"{MAIL_COL}2").color = (255, 255, 255)
+
+                    elif dst_address is None:
+                        xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"{MAIL_COL}2").color = (139, 0, 0)
                 interval_date = xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"I{index}:J{index}").value
                 # move it to object oriented
                 if interval_date[0]:

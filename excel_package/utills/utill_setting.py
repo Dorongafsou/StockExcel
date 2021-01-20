@@ -6,6 +6,8 @@ BLUE_HEADER = (96, 211, 249)
 ORANGE_HEADER = (255, 165, 0)
 LINK_COL = "R"
 GRAPH_DATES_COL = ["T", "U"]
+MAIL_COL = "V"
+DEFAULT_DST_ADDRESS = "Dorongafsou13@gmail.com"
 # sheets names
 LIVE_STOCK = "Live Stock"
 GRAPH_STOCK = "Graph Stock"
