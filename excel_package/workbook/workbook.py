@@ -6,13 +6,15 @@ from threading import Thread
 from excel_package.sheet.live_sheet import LiveSheet
 from excel_package.sheet.stock_close_price_g import StockCloseGraph
 from excel_package.sheet.stock_cumulative_daly_return import StockCumulativeDalyReturn
+from excel_package.sheet.stock_interval_sheet import StockIntervalSheet
 from excel_package.sheet.stock_return_per_day import StockReturnPerDay
 from excel_package.sheet.stock_total_money import StockTotalGraph
 from excel_package.utills.utill_setting import LIVE_STOCK, GRAPH_STOCK, GRAPH_TOTAL, GRAPH_RETURN_PER_DAY, \
-    CUMULATIVE_DALY_RETURN
+    CUMULATIVE_DALY_RETURN, INTERVAL_SHEET
 
 SHEET_NAMES_DEFAULT = {
     LIVE_STOCK: LiveSheet,
+    INTERVAL_SHEET: StockIntervalSheet,
     GRAPH_STOCK: StockCloseGraph,
     GRAPH_TOTAL: StockTotalGraph,
     GRAPH_RETURN_PER_DAY: StockReturnPerDay,
@@ -46,9 +48,9 @@ class WorkBook(object):
     def real_time(self):
         threads = [Thread(target=self.sheet_list[0].run_sheet)]
         import time
-        [t.start() for t in threads]
-        time.sleep(50)
+        # time.sleep(50)
         threads += [Thread(target=self.run_graph, args=[self.sheet_list[1:]])]
+        [t.start() for t in threads]
 
 
     @staticmethod

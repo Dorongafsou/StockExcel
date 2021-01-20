@@ -1,12 +1,13 @@
 import time
 from xlwings.utils import rgb_to_int
 from excel_package.sheet.sheet import Sheet
-
+import yfinance as yf
 from excel_package.Email.mail import send_mail
 import xlwings as xw
 from threading import Thread
 
 from excel_package.stock_data.live_stock import LiveStock
+from excel_package.stock_data.stock_interval import StockInterval
 from excel_package.utills.utill_setting import *
 
 
@@ -17,15 +18,14 @@ class LiveSheet(Sheet):
         self._xlwing_sheet.range("I1").api.Font.Bold = True
         self._xlwing_sheet.range("A2:j2").color = BLUE_HEADER  # blue header
         self._xlwing_sheet.range("A2:A2").color = ORANGE_HEADER  # orange header
-        self._xlwing_sheet.range("H2:J2").color = ORANGE_HEADER  # orange header
-        self._xlwing_sheet.range('A3:j32').color = (230, 230, 230)  # gray body
-        self._xlwing_sheet.range('A2:j32').api.Borders.Weight = 3
-        self._xlwing_sheet.range('A2:j32').api.Font.Bold = True
+        self._xlwing_sheet.range("I2:M2").color = ORANGE_HEADER  # orange header
+        self._xlwing_sheet.range('A3:M32').color = (230, 230, 230)  # gray body
+        self._xlwing_sheet.range('A2:M32').api.Borders.Weight = 3
+        self._xlwing_sheet.range('A2:M32').api.Font.Bold = True
 
         # self._xlwing_sheet.range("A3:E32").options(transpose=True).value = list(stocks_translate_dict.values())
-        self._xlwing_sheet.range("A2").value = ['stock', "value", "bid", 'ask', "min", "max", "open",
-                                                "Buy/Sell", "count", "condition"]
-        xw.Range('H2:I2').autofit()
+        self._xlwing_sheet.range("A2").value = ['stock', "value", "bid", 'ask', "min", "max", "open", "volume", "interval",
+                                                "days ago", "Buy/Sell", "count", "condition"]
 
         # graph chose
         self._xlwing_sheet.range(f"{GRAPH_DATES_COL[0]}1").value = "Graph dates"
@@ -42,6 +42,8 @@ class LiveSheet(Sheet):
         for i, link in zip(range(len(links_val)), links_val):
             self._xlwing_sheet.range(f"{LINK_COL}{i + 2}").value = link
 
+        # interval and date
+
     @staticmethod
     def thread_run(arg_dict: dict):
         ticker = arg_dict.get("ticker")
@@ -49,21 +51,47 @@ class LiveSheet(Sheet):
         stock = LiveStock(stock_ticker=ticker)
         stock.update_stock(ticker)
         stock_vals = [
-            "price", "bid", "ask", "regularMarketDayLow", "regularMarketDayHigh", "regularMarketOpen"
+            "price", "bid", "ask", "regularMarketDayLow", "regularMarketDayHigh", "regularMarketOpen", "regularMarketVolume"
         ]
         tmp_char = "B"
         try:
             for i, type_val in enumerate(stock_vals):
-                xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"B{index}").api.Font.Color = [rgb_to_int((107, 142, 35)), rgb_to_int((139, 0, 0))][getattr(stock, "color") == "red"]
+                xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"B{index}").api.Font.Color = \
+                    [rgb_to_int((107, 142, 35)), rgb_to_int((139, 0, 0))][getattr(stock, "color") == "red"]
 
                 xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"{chr(ord(tmp_char) + i)}{index}").value = [
                     getattr(stock, type_val)
                 ]
-                if xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"J{index}").value is True:
-                    mail_content = [str(obj) for obj in xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"H{index}:I{index}").options(numbers=int).value]
-                    send_mail(getattr(stock, 'displayName'), ' '.join(mail_content))
-                    xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"H{index}:J{index}").clear_contents()
+                if xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"M{index}").value is True:
+                    mail_content = [str(obj) for obj in
+                                    xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"K{index}:L{index}").options(
+                                        numbers=int).value]
 
+                    send_mail(getattr(stock, 'displayName'), ' '.join(mail_content))
+                    xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"K{index}:M{index}").clear_contents()
+                interval_date = xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"I{index}:J{index}").value
+                # move it to object oriented
+                if interval_date[0]:
+                    df_stock_interval = StockInterval().get_interval(tk=ticker, interval=interval_date[0], period=interval_date[1])
+                    shape_len = df_stock_interval.shape[1] + 1
+                    col = ((index-INDEX_TO_START_STOCK_VAL) * (shape_len + 1))
+
+                    TK_NAME_LINE = 1
+                    STOCK_INTERVAL_LINE = 2
+
+                    xw.Book(arg_dict.get("file_name")).sheets[INTERVAL_SHEET].range(
+                        (TK_NAME_LINE, col + 2)).value = getattr(stock, 'displayName') if hasattr(stock, 'displayName') else ticker
+
+                    xw.Book(arg_dict.get("file_name")).sheets[INTERVAL_SHEET].range(
+                        (TK_NAME_LINE, col + 2)).color = ORANGE_HEADER
+
+                    xw.Book(arg_dict.get("file_name")).sheets[INTERVAL_SHEET].range(
+                        (STOCK_INTERVAL_LINE, col + 2)).value = df_stock_interval
+
+                    xw.Book(arg_dict.get("file_name")).sheets[INTERVAL_SHEET].range(
+                        (STOCK_INTERVAL_LINE, col + 2),  (STOCK_INTERVAL_LINE, col + 1 + shape_len)).color = BLUE_HEADER
+
+                    xw.Book(arg_dict.get("file_name")).sheets[arg_dict.get("name")].range(f"I{index}:J{index}").clear_contents()
 
         except Exception as ex:
             return None
